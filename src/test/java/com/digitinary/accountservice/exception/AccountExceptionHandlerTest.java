@@ -10,14 +10,14 @@ class AccountExceptionHandlerTest {
 
     @Test
     void handleAccountNotFoundException() {
-        
+        Long accountId = 1234567890L;
         AccountExceptionHandler exceptionHandler = new AccountExceptionHandler();
-        AccountNotFoundException exception = new AccountNotFoundException("Account not found");
+        AccountNotFoundException exception = new AccountNotFoundException(accountId);
 
         ResponseEntity<Object> response = exceptionHandler.handleAccountNotFoundException(exception);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Account not found", response.getBody());
+        assertEquals("Account not found for this id :: " + accountId, response.getBody());
     }
 
     @Test

@@ -1,8 +1,9 @@
 package com.digitinary.accountservice.entity;
 
+import com.digitinary.accountservice.model.AccountType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +15,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long customerId;
     private Double balance;
     private String status;
+    @Enumerated(EnumType.STRING)
+    private AccountType type;
 }

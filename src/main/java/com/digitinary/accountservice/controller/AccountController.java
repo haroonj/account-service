@@ -1,6 +1,7 @@
 package com.digitinary.accountservice.controller;
 
 import com.digitinary.accountservice.entity.Account;
+import com.digitinary.accountservice.model.dto.AccountDTO;
 import com.digitinary.accountservice.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,22 +19,22 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<Account> createAccount(@RequestBody Account account) {
+    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO account) {
         return ResponseEntity.ok(accountService.createAccount(account));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
-        return accountService.getAccountById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<AccountDTO> getAccountById(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
     @GetMapping
-    public List<Account> getAllAccounts() {
+    public List<AccountDTO> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {
+    public ResponseEntity<AccountDTO> updateAccount(@PathVariable Long id, @RequestBody AccountDTO account) {
         return ResponseEntity.ok(accountService.updateAccount(id, account));
     }
 

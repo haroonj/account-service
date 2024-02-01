@@ -1,6 +1,7 @@
 package com.digitinary.accountservice.repository;
 
 import com.digitinary.accountservice.entity.Account;
+import com.digitinary.accountservice.model.AccountType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,11 @@ class AccountRepositoryTest {
     void testSaveAccount() {
 
         Account account = new Account();
-        account.setCustomerId(1L);
-        account.setBalance(100.0);
+        account.setId(1234567890L);
+        account.setCustomerId(1234567L);
+        account.setBalance(1000.0);
         account.setStatus("ACTIVE");
+        account.setType(AccountType.INVESTMENT);
 
         Account savedAccount = accountRepository.save(account);
 
@@ -38,9 +41,11 @@ class AccountRepositoryTest {
     void testFindAccountById() {
 
         Account account = new Account();
-        account.setCustomerId(1L);
-        account.setBalance(100.0);
+        account.setId(1234567890L);
+        account.setCustomerId(1234567L);
+        account.setBalance(1000.0);
         account.setStatus("ACTIVE");
+        account.setType(AccountType.INVESTMENT);
 
         Account savedAccount = entityManager.persistAndFlush(account);
 
