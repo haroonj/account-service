@@ -1,0 +1,86 @@
+version: "3"
+
+services:
+  customer-db:
+    image: mysql:8
+    container_name: customer-db-container
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=customerDB
+    ports:
+      - "3306:3306"
+    networks:
+      - spring-cloud-microservices
+
+  account-db:
+    image: mysql:8
+    container_name: account-db-container
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=accountDB
+    ports:
+      - "3307:3306"
+    networks:
+      - spring-cloud-microservices
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - spring-cloud-microservices
+
+  customer-service:
+    image: haroun9/customer-service
+    container_name: customer-service-container
+    restart: always
+    depends_on:
+      - customer-db
+    environment:
+      - DB_HOST=customer-db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_SCHEMA=customerDB
+      - ACTIVE_PROFILE=dev
+      - MQ_HOST=rabbitmq
+      - MQ_PORT=5672
+      - MQ_USER=guest
+      - MQ_PASS=guest
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-cloud-microservices
+
+  account-service:
+    image: haroun9/account-service
+    container_name: account-service-container
+    restart: always
+    depends_on:
+      - account-db
+    environment:
+      - DB_HOST=account-db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_SCHEMA=accountDB
+      - ACTIVE_PROFILE=dev
+      - MQ_HOST=rabbitmq
+      - MQ_PORT=5672
+      - MQ_USER=guest
+      - MQ_PASS=guest
+    expose:
+      - 8090
+    ports:
+      - "8090:8090"
+    networks:
+      - spring-cloud-microservices
+
+networks:
+  spring-cloud-microservices:
