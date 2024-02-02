@@ -14,15 +14,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @Service
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final Random random;
 
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
+        this.random = new Random();
     }
 
     @Transactional
@@ -32,10 +35,9 @@ public class AccountService {
         validateSalaryAccountType(account.getCustomerId(), account.getType());
         isValidAccountType(account.getType());
 
-        return AccountMapper.toDTO(
-                accountRepository.save(
-                        AccountMapper.toEntity(account
-                        )));
+        Account savedAccount = accountRepository.save(AccountMapper.toEntity(account));
+        log.debug("Account created with values {}", savedAccount);
+        return AccountMapper.toDTO(savedAccount);
     }
 
     public AccountDTO getAccountById(Long id) {
@@ -45,11 +47,9 @@ public class AccountService {
 
     public List<AccountDTO> getAllAccounts() {
         List<Account> accounts = accountRepository.findAll();
-        return accounts.stream()
-                .map(AccountMapper::toDTO)
-                .toList();
+        return accounts.stream().map(AccountMapper::toDTO).toList();
     }
-
+    @Transactional
     public AccountDTO updateAccount(Long id, AccountDTO accountDetails) {
         validateSalaryAccountType(accountDetails.getCustomerId(), accountDetails.getType());
         isValidAccountType(accountDetails.getType());
@@ -58,12 +58,32 @@ public class AccountService {
         account.setStatus(accountDetails.getStatus());
         account.setType(AccountType.valueOf(accountDetails.getType().toUpperCase()));
 
-        return AccountMapper.toDTO(accountRepository.save(account));
+        Account savedAccount = accountRepository.save(account);
+        log.debug("Account updated with values {}", savedAccount);
+        return AccountMapper.toDTO(account);
     }
-
+    @Transactional
     public void deleteAccount(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
         accountRepository.delete(account);
+    }
+    @Transactional
+    public void createDefaultAccount(Long customerId) {
+        Account account = new Account();
+        account.setId(generateRandomAccountId(customerId));
+        account.setCustomerId(customerId);
+        account.setBalance(0.0);
+        account.setStatus("INACTIVE");
+        account.setType(AccountType.SAVINGS);
+
+        accountRepository.save(account);
+        log.debug("Default account created with values {}", account);
+    }
+
+    @Transactional
+    public void deleteAllByCustomerId(Long customerId){
+        accountRepository.deleteAllByCustomerId(customerId);
+        log.debug("All accounts have been deleted for customer id {}", customerId);
     }
 
     private void validateAccountId(Long accountId, Long customerId) {
@@ -104,4 +124,7 @@ public class AccountService {
         }
     }
 
+    private Long generateRandomAccountId(Long customerId) {
+        return Long.parseLong(customerId + String.valueOf(100 + random.nextInt(900)));
+    }
 }

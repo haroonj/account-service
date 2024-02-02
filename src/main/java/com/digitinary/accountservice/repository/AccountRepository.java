@@ -8,4 +8,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Long countByCustomerId(Long customerId);
 
     Long countByCustomerIdAndType(Long customerId, AccountType type);
+
+    void deleteAllByCustomerId(Long customerId);
 }
